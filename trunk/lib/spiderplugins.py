@@ -15,9 +15,10 @@ class getPlugins(object):
 
 	def run(self):
 		self.maxsize = self.pages[-1]
+		self.page = self.pages[0]
 		self.plugin_list = []
 		self.find_names = re.compile("\/plugins\/(.+)\/\">")
-		for self.page in self.pages:
+		while (self.page != (self.maxsize+1)):
 			self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.connmsg = self.s.connect_ex(("wordpress.org",80))
 			while (self.connmsg != 0):
@@ -31,16 +32,16 @@ class getPlugins(object):
 			self.chunk = self.s.recv(8000)
 			if (self.chunk.find("500 Internal") > 0):
 				print("500 Internal Server Error! You are sending too fast!")
-				return 1
-			while (self.chunk.find("http://wordpress.org/about/privacy/") <= 0):
-				sleep(1)
-				self.chunk += self.s.recv(4096)
-			self.s.close()
-                	self.names = self.find_names.findall(self.chunk)
-			for self.name in self.names:
-				lock.acquire()
-				self.plugin_list.append(str(self.name))
-				lock.release()
+			elif (self.chunk.find("200 OK") <= 0):
+				print("Irregular response seen!")
+			else:
+				while (self.chunk.find("http://wordpress.org/about/privacy/") <= 0):
+					sleep(1)
+					self.chunk += self.s.recv(4096)
+				self.s.close()
+                		self.names = self.find_names.findall(self.chunk)
+				for self.name in self.names:	self.plugin_list.append(str(self.name))
+				self.page += 1
 		lock.acquire()
 		f = open(plugout,"a")
 		for self.plugin in self.plugin_list:	f.write(str(self.plugin)+"\n")

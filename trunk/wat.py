@@ -1,4 +1,4 @@
-# TODO: find themes / timthumb exploit
+# TODO: timthumb exploit
 # TODO: find wp-config backups
 # TODO: if backup software, bruteforce backup file
 # TODO: cross-reference plugin versions
