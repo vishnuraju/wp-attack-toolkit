@@ -15,9 +15,10 @@ class getThemes(object):
 
 	def run(self):
 		self.maxsize = self.pages[-1]
-                self.theme_list = []
+                self.page = self.pages[0]
+		self.theme_list = []
                 self.find_names = re.compile("\/wp\-content\/themes\/(.+)\/screenshot.png")
-		for self.page in self.pages:
+		while (self.page != (self.maxsize+1)):
                         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         self.connmsg = self.s.connect_ex(("wordpress.org",80))
                         while (self.connmsg != 0):
@@ -29,27 +30,25 @@ class getThemes(object):
                         print("Spidering theme page %d of %d" % (self.page,self.maxsize))
                         sleep(2)
                         self.chunk = self.s.recv(8000)
-			# TODO: This will restart entire chunk
                         if (self.chunk.find("500 Internal") > 0):
                                 print("500 Internal Server Error! You are sending too fast!")
-                                return 1
-			while (self.chunk.find("http://wordpress.org/about/privacy/") <= 0):
-                                sleep(1)
-                                self.chunk += self.s.recv(2048)
-				#print("%s" % str(len(self.chunk)))
-				# TODO: slow networks take a shit on this part
-                        self.s.close()
-                        self.names = self.find_names.findall(self.chunk)
-                        for self.name in self.names:
-                                lock.acquire()
-                                self.theme_list.append(str(self.name))
-                                lock.release()
+			elif (self.chunk.find("200 OK") <= 0):
+				print("Irregular response seen!")
+			else:
+				while (self.chunk.find("http://wordpress.org/about/privacy/") <= 0):
+                                	sleep(1)
+                                	self.chunk += self.s.recv(2048)
+					#print("%s" % str(len(self.chunk)))
+					# TODO: slow networks take a shit on this part
+                        	self.s.close()
+                        	self.names = self.find_names.findall(self.chunk)
+                        	for self.name in self.names:	self.theme_list.append(str(self.name))
+				self.page += 1
                 lock.acquire()
                 f = open(themeout,"a")
                 for self.theme in self.theme_list:    f.write(str(self.theme)+"\n")
                 f.close()
                 lock.release()
-		print("end")
                 return 0
 
 # gop 1 will be theme, gop 2 plugin, gop 3 both
