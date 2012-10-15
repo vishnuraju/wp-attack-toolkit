@@ -68,7 +68,6 @@ def bruteUser(userlist,psize,hosti,pathi,porti,securei,userfound):
 	f = open(userout,'w').close()
 	usersize = len(userlist)
 	# manage pool
-	if (psize == 0):	psize = 5
 	if (usersize <= psize):	chunksize = 1
 	else:	chunksize = ((usersize / psize) + (usersize % psize))
 	print("Userlist size: %d\tChunk size: %d\tPool size: %d" % (usersize,chunksize,psize))
