@@ -28,7 +28,8 @@ processing\tSet concurrent processes running at a time\n''' % argv[0])
 \t-endpage #\tEnd of plugin pages to finish on (default is max)
 \t-pluginlist <filename>\tPlugin list output file (default is lists/plugins.lst)
 \t-append\tToggle append mode to append to list instead of write over (default is off)
-Example:\tpython %s getplugs <options> <processes>\n''' % argv[0])
+Example:\tpython %s getplugs <options> <processes>
+***Please note - to save script timing, these do not write until each process chunk has finished. If you quit, then they do not write.***\n''' % argv[0])
 	if (argType[0] == "getthemes"):
 		exitvalue.append('''Generate Theme List\tPull new or update theme list
 \tgetthemes\tIf no arguments given, defaults chosen for all options
@@ -255,13 +256,13 @@ if (troubleshoot == 1):
 if (getplugs == 1):
 	from lib import spiderplugins
 	if (append != 1):
-		try:	plugclear = open(plugfile,'w').close()
+		try:	open(plugfile,'w').close()
 		except IOError,e:	usage(("Write denied on file:\t%s" % e),["getplugs",''])
 	spiderplugins.spiderman(page,endpage,psize,plugfile)
 if (getthemes == 1):
 	from lib import spiderthemes
 	if (append != 1):
-		try:	themeclear = open(themefound,'w').close()
+		try:	open(themefound,'w').close()
 		except IOError,e:	usage(("Write denied on file:\t%s" % e),["getthemes",''])
 	spiderthemes.spiderman(page,endpage,psize,themefound)
 if (bruteuserlist == 1):
