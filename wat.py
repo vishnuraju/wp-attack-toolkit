@@ -120,14 +120,10 @@ for arg in argv:
 	if (str(arg) == "-h"):
 		usage('',["showall",''])
 	elif (str(arg) == "getplugins"):
-		try:	argv[x+1]
-		except:	usage("getplugins arguments:",["getplugins",''])
 		getplugs = 1
 		page = 0
 		endpage = 0
 	elif (str(arg) == "getthemes"):
-		try:	argv[x+1]
-		except:	usage("getthemes arguments:",["getthemes",''])
 		getthemes = 1
 		page = 0
 		endpage = 0
