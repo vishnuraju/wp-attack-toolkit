@@ -16,11 +16,16 @@ def pluginDetect(pluginname):
 	sleep(1)
 	chunk = ssocket.recv(200)
 	if (chunk.find("200 OK") > 0):
-		while (chunk.find("Description") <= 0):
+		trigger = 0
+		while (chunk.find("Description") <= 0 and trigger != 8):
 			sleep(1)
 			chunk += ssocket.recv(200)
+			trigger += 1
+		if (trigger == 8):
+			print("error looking for description for %s" % pluginname)
+			return 1
 		ssocket.close()
-		versionreg = re.compile("Stable tag:(.+)")
+		versionreg = re.compile("Stable tag:(.+)",re.IGNORECASE)
 		versionfind = versionreg.findall(chunk)[0]
 		print("%s%s" % (pluginname, versionfind))
 		f = open(plugout,"a")
@@ -53,7 +58,7 @@ def themeDetect(theme):
                         sleep(1)
                         chunk += ssocket.recv(200)
                 ssocket.close()
-                versionreg = re.compile("Version:(.+)")
+                versionreg = re.compile("Version:(.+)", re.IGNORECASE)
                 versionfind = versionreg.findall(chunk)[0]
                 print("%s%s" % (theme, versionfind))
                 f = open(themeout,"a")
