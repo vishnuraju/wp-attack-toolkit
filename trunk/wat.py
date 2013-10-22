@@ -215,8 +215,8 @@ for arg in argv:
 	elif (str(arg) == "-dir"):
 		try:	path = str(argv[x+1])
 		except:	usage("-dir not properly set",['',"generic"])
-		if (path.find("/") <= 0):
-			usage("-dir path not properly set",['',"generic"])
+		#if (path.find("/") <= 0):
+		#	usage("-dir path not properly set2",['',"generic"])
 	elif (str(arg) == "-port"):
 		try:	port = int(argv[x+1])
 		except:	usage("-port not properly set",['',"generic"])

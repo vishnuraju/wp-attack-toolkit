@@ -41,9 +41,15 @@ class BrutePlugins(object):
 			f.close()
 			lock.release()
 		elif (self.chunk.find("500") > 0):
-			print(str(self.chunk))
+			print(str(self.plugin))
 			print("500 Internal Server Error Seen, you might be sending too fast!")
-			return 1
+			print("Logged to file as 500 in case of locked directory. If you see lots of these, please slow down scanner")
+			lock.acquire()
+			f = open(plugfound,"a")
+			f.write("500 (possible): "+self.plugin+"\n")
+			f.close()
+			lock.release()
+			return 0
 		elif (self.chunk.find("404") > 0): self.donothing = 1
 		else:
 			print("Irregular server response seen.\n%s" % str(self.chunk))
