@@ -25,6 +25,7 @@ class BrutePlugins(object):
 		while (len(self.chunk) < 20):
 			sleep(1)
 			self.chunk += self.ssocket.recv(20)
+		self.ssocket.shutdown(socket.SHUT_RDWR)
 		self.ssocket.close()
 		if (self.chunk.find("200 OK") > 0):
 			print("Valid plugin found:\t%s" % self.plugin)
@@ -51,6 +52,8 @@ class BrutePlugins(object):
 			lock.release()
 			return 0
 		elif (self.chunk.find("404") > 0): self.donothing = 1
+		# this only for a client who had certain keywords have redirect tags
+		#elif (self.chunk.find("301") > 0): self.donothing = 1
 		else:
 			print("Irregular server response seen.\n%s" % str(self.chunk))
 			return 1

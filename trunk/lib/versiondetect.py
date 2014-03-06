@@ -24,6 +24,7 @@ def pluginDetect(pluginname):
 		if (trigger == 8):
 			print("error looking for description for %s" % pluginname)
 			return 1
+		ssocket.shutdown(socket.SHUT_RDWR)
 		ssocket.close()
 		versionreg = re.compile("Stable tag:(.+)",re.IGNORECASE)
 		versionfind = versionreg.findall(chunk)[0]
@@ -33,10 +34,12 @@ def pluginDetect(pluginname):
 		f.close()
 		return 0	
 	elif (chunk.find("500 Internal") > 0):
+		ssocket.shutdown(socket.SHUT_RDWR)
 		ssocket.close()
 		print("500 internal server error seen! You may be sending too fast!")
 		return 1
 	else:
+		ssocket.shutdown(socket.SHUT_RDWR)
 		ssocket.close()
 		print("Different response seen. Possibly 403 Forbidden to readme file?\n" % chunk)
 		return 1
@@ -70,7 +73,8 @@ def themeDetect(theme):
                 print("500 internal server error seen! You may be sending too fast!")
                 return 1
         else:
-                ssocket.close()
+                ssocket.shutdown(socket.SHUT_RDWR)
+		ssocket.close()
                 print("Different response seen. Possibly 403 Forbidden to readme file?\n" % chunk)
                 return 1
 
@@ -93,6 +97,7 @@ def wordpressDetect():
 			sleep(1)
 			chunk += ssocket.recv(400)
 			trigger += 1
+		ssocket.shutdown(socket.SHUT_RDWR)
 		ssocket.close()
 		if (trigger != 8):
 			metafind = re.compile("meta name=\"generator\" content=\"WordPress (.+)\"")
@@ -121,6 +126,7 @@ def wordpressDetect():
 			sleep(1)
 			chunk += ssocket.recv(200)
 			trigger += 1
+		ssocket.shutdown(socket.SHUT_RDWR)
 		ssocket.close()
 		if (trigger != 8):
 			colorfind = re.compile("fresh[\w\.\d]+\?ver=([\.\d\w\s-]+)")

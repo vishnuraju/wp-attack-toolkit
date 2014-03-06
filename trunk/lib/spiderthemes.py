@@ -25,7 +25,7 @@ class getThemes(object):
                                 print("Error grabbing page:\t%s" % strerror(self.connmsg))
                                 sleep(2.1) # minimum timeout for next socket
                                 self.connmsg = self.s.connect_ex(("wordpress.org",80))
-                        self.s.send("GET /extend/themes/browse/popular/page/"+str(self.page)+"/ HTTP/1.1\r\nHost: wordpress.orgr\n\r\n")
+                        self.s.send("GET /themes/browse/popular/page/"+str(self.page)+"/ HTTP/1.1\r\nHost: wordpress.org\n\r\n")
                         # I could lock, but...who cares? lock acquire and release if you do
                         print("Spidering theme page %d of %d" % (self.page,self.maxsize))
                         sleep(2)
@@ -35,11 +35,12 @@ class getThemes(object):
 			elif (self.chunk.find("200 OK") <= 0):
 				print("Irregular response seen!")
 			else:
-				while (self.chunk.find("http://wordpress.org/about/privacy/") <= 0):
+				while (self.chunk.find("//wordpress.org/about/privacy/") <= 0):
                                 	sleep(1)
                                 	self.chunk += self.s.recv(2048)
 					#print("%s" % str(len(self.chunk)))
 					# TODO: slow networks take a shit on this part
+				self.s.shutdown(socket.SHUT_RDWR)
                         	self.s.close()
                         	self.names = self.find_names.findall(self.chunk)
                         	for self.name in self.names:	self.theme_list.append(str(self.name))
@@ -76,15 +77,16 @@ def spiderman(page,endpage,psize,themef):
 			sleep(2.1)
 			connmsg = s.connect_ex(("wordpress.org",80))
 		print("Spidering initial theme page")
-		s.send("GET /extend/themes/browse/popular/ HTTP/1.1\r\nHost: wordpress.org\r\n\r\n")
+		s.send("GET /themes/browse/popular/ HTTP/1.1\r\nHost: wordpress.org\r\n\r\n")
 		sleep(2)
 		chunk = s.recv(8000)
-		while (chunk.find("http://wordpress.org/about/privacy/") <= 0):
+		while (chunk.find("//wordpress.org/about/privacy/") <= 0):
 			sleep(1)
 			chunk += s.recv(2048)
+		s.shutdown(socket.SHUT_RDWR)
 		s.close()
 		names = find_names.findall(chunk)
-		if (endpage <= 1):	endpage = int(re.findall("\/extend\/themes\/browse\/popular\/page\/(\d{3,})", chunk)[0])
+		if (endpage <= 1):	endpage = int(re.findall("\/themes\/browse\/popular\/page\/(\d{3,})", chunk)[0])
 		if (page <= 1):
 			for name in names:	theme_list.append(str(name))
 			page = 2

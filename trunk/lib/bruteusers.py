@@ -25,6 +25,7 @@ class BruteUser(object):
 		while (len(self.chunk) < 20):
 			sleep(1)
 			self.chunk += self.ssocket.recv(20)
+		self.ssocket.shutdown(socket.SHUT_RDWR)
 		self.ssocket.close()
 		if (self.chunk.find("200 OK") > 0):
 			print("Valid user found:\t%s" % self.username)
