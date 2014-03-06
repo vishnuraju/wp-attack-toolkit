@@ -25,6 +25,7 @@ class BruteThemes(object):
 		while (len(self.chunk) < 20):
 			sleep(1)
 			self.chunk += self.ssocket.recv(20)
+		self.ssocket.shutdown(socket.SHUT_RDWR)
 		self.ssocket.close()
 		if (self.chunk.find("200 OK") > 0):
 			print("Valid theme found:\t%s" % self.theme)
@@ -48,6 +49,8 @@ class BruteThemes(object):
 			f.close()
 			lock.release()
 			return 0
+		# fuck you specific client
+		elif (self.chunk.find("301") > 0):	self.donothing=1
 		elif (self.chunk.find("404") > 0): self.donothing = 1
 		else:
 			print("Irregular server response seen.\n%s" % str(self.chunk))

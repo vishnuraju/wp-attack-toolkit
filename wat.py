@@ -243,6 +243,7 @@ def testArgs(host,path,port,secure):
 	chunk = ssocket.recv(400)
 	if (chunk.find("200 OK") <= 0):	exit("\nError trying %s%s\n\n%s" % (host,path,chunk))
 	else:	print("Connection looks good for %s%s" % (host,path))
+	ssocket.shutdown(socket.SHUT_RDWR)
 	ssocket.close()
 		
 if (troubleshoot == 1):

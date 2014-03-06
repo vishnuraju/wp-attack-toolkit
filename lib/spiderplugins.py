@@ -25,7 +25,7 @@ class getPlugins(object):
 				print("Error grabbing page:\t%s" % strerror(self.connmsg))
 				sleep(2.1) # minimum timeout for next socket
 				self.connmsg = self.s.connect_ex(("wordpress.org",80))
-			self.s.send("GET /extend/plugins/browse/popular/page/"+str(self.page)+"/ HTTP/1.1\r\nHost: wordpress.org\r\n\r\n")	
+			self.s.send("GET /plugins/browse/popular/page/"+str(self.page)+"/ HTTP/1.1\r\nHost: wordpress.org\r\n\r\n")	
 			# I could lock stdout, but...who cares? lock acquire and release if you do
 			print("Spidering page %d of %d" % (self.page,self.maxsize))
 			sleep(2)
@@ -35,9 +35,10 @@ class getPlugins(object):
 			elif (self.chunk.find("200 OK") <= 0):
 				print("Irregular response seen!")
 			else:
-				while (self.chunk.find("http://wordpress.org/about/privacy/") <= 0):
+				while (self.chunk.find("//wordpress.org/about/privacy/") <= 0):
 					sleep(1)
 					self.chunk += self.s.recv(4096)
+				self.s.shutdown(socket.SHUT_RDWR)
 				self.s.close()
                 		self.names = self.find_names.findall(self.chunk)
 				for self.name in self.names:	self.plugin_list.append(str(self.name))
@@ -74,15 +75,16 @@ def spiderman(page,endpage,psize,plugf):
                         sleep(2.1)
                         connmsg = s.connect_ex(("wordpress.org",80))
                 print("Spidering initial plugin page")
-                s.send("GET /extend/plugins/browse/popular/ HTTP/1.1\r\nHost: wordpress.org\r\n\r\n")
+                s.send("GET /plugins/browse/popular/ HTTP/1.1\r\nHost: wordpress.org\r\n\r\n")
                 sleep(2)
                 chunk = s.recv(8000)
-                while (chunk.find("http://wordpress.org/about/privacy/") <= 0):
+                while (chunk.find("//wordpress.org/about/privacy/") <= 0):
                         sleep(1)
                         chunk += s.recv(4096)
-                s.close()
+                s.shutdown(socket.SHUT_RDWR)
+		s.close()
                 names = find_names.findall(chunk)
-                if (endpage <= 1):      endpage = int(re.findall("\"\/extend\/plugins\/browse\/popular\/page\/(\d{4,})", chunk)[0])
+                if (endpage <= 1):      endpage = int(re.findall("\"\/plugins\/browse\/popular\/page\/(\d{4,})", chunk)[0])
 		if (page <= 1):
                         for name in names:	plugin_list.append(str(name))
                 	page = 2

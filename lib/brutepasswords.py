@@ -30,6 +30,7 @@ class BrutePasswords(object):
 			sleep(1)
 			self.chunk += self.ssocket.recv(800)
 			self.trigger += 1
+		self.ssocket.shutdown(socket.SHUT_RDWR)
 		self.ssocket.close()
 		if (self.trigger == 8):
 			print("Not enough data returned")
